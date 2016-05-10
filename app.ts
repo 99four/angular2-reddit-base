@@ -25,13 +25,13 @@ import { Component } from "angular2/core";
       </a>
       <ul class="ui big horizontal list voters">
         <li class="item">
-          <a href (click)=voteUp()">
+          <a href (click)="voteUp()">
             <i class="arrow up icon"></i>
               upvote
           </a>
         </li>
         <li class="item">
-          <a href (click)=voteDown()">
+          <a href (click)="voteDown()">
             <i class="arrow down icon"></i>
               downvote
           </a>
@@ -42,8 +42,31 @@ import { Component } from "angular2/core";
 })
 
 
+class ArticleComponent {
+  votes: number;
+  title: string;
+  link: string;
+  
+  constructor(){
+    this.title = 'Angular 2';
+    this.link = 'http://angular.io';
+    this.votes = 10;
+  }
+  
+  voteUp() {
+    this.votes += 1;
+    return false;
+  }
+  
+  voteDown(){
+    this.votes -= 1;
+    return false;
+  }
+}
+
 @Component({
   selector: 'reddit',
+  directives: [ArticleComponent],
   template: `
     <form class="ui large form segment">
       <h3 class="ui header">Add a link</h3>
@@ -62,14 +85,22 @@ import { Component } from "angular2/core";
         Submit link
       </button>
     </form>
+    
+    <div class="ui grid posts">
+      <reddit-article>
+      </reddit-article>
+    </div>
+    
   `
 })
+
+
 class RedditApp {
   constructor(){
   }
   
   addArticle(title: HTMLInputElement, link: HTMLInputElement): void {
-    console.log(`Adding article title: ${title} and link: ${link.value}`);
+    console.log(`Adding article title: ${title.value} and link: ${link.value}`);
   }
 }
 
