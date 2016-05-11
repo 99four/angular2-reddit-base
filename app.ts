@@ -13,10 +13,28 @@ class Article {
     this.link = link;
     this.votes = votes || 0;
   }
+  
+  domain(): string {
+    try {
+      const link: string = this.link.split('//')[1];
+      return link.split('/')[0];
+    } catch (err) {
+      return null;
+    }
+  }
+  
+  voteUp(): void {
+    this.votes += 1;
+  }
+  
+  voteDown(): void {
+    this.votes -= 1;
+  }
 }
 
 @Component({
   selector: 'reddit-article',
+  inputs: ['article'],
   host: {
     class: 'row'
   },
@@ -54,12 +72,7 @@ class Article {
 })
 
 class ArticleComponent {
-  
   article: Article;
-  
-  constructor(){
-    this.article = new Article('dfsdfs', 'fdsfdsf', 3);
-  }
   
   voteUp() : boolean{
     this.article.votes += 1;
@@ -95,7 +108,9 @@ class ArticleComponent {
     </form>
     
     <div class="ui grid posts">
-      <reddit-article>
+      <reddit-article 
+        *ngFor='#article of sortedArticles()'
+        [article]='article'>
       </reddit-article>
     </div>
     
@@ -103,11 +118,25 @@ class ArticleComponent {
 })
 
 class RedditApp {
+  articles: Article[];
+  
   constructor(){
+    this.articles = [
+      new Article('Angular 2', 'http://angular.io', 3),
+      new Article('Fullstack', 'http://fullstack.io', 2),
+      new Article('Angular Homepage', 'http://angular.io', 1),
+    ];
   }
   
   addArticle(title: HTMLInputElement, link: HTMLInputElement): void {
     console.log(`Adding article title: ${title.value} and link: ${link.value}`);
+    this.articles.push(new Article(title.value, link.value, 0));
+    title.value = '';
+    link.value = '';
+  }
+  
+  sortedArticles() : Article[] {
+    return this.articles.sort((a, b) => b.votes - a.votes);
   }
 }
 
